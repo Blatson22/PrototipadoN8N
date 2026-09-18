@@ -37,8 +37,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  // TODO: reemplaza esto con la URL de tu webhook de n8n.
-  // Si pruebas contra la Production URL, usa localhost/10.0.2.2 según tu caso.
+  // Si pruebas en Android emulator, cambia localhost por 10.0.2.2.
   static const String n8nWebhookUrl =
       'http://localhost:5678/webhook/chat';
 
