@@ -52,7 +52,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"deepseek/deepseek-v4-flash\",\n  \"messages\": {{ JSON.stringify($json.messages) }}\n}"
+        "jsonBody": "={{ { model: 'deepseek/deepseek-v4-flash', messages: $json.messages } }}"
       },
       "id": "44444444-4444-4444-4444-444444444444",
       "name": "Llamar a OpenRouter",
