@@ -28,21 +28,12 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "22222222-2222-2222-2222-222222222222",
-              "name": "userMessage",
-              "value": "={{ $json.body?.message || $json.message || \"Hola, prueba\" }}",
-              "type": "string"
-            }
-          ]
-        }
+        "jsCode": "const history = $getWorkflowStaticData('global').messages || [];\nconst raw = $json.body?.message ?? $json.message ?? '';\nconst msg = String(raw).trim() || 'Hola, prueba';\nif (!history.some(m => m.role === 'system')) {\n  history.unshift({ role: 'system', content: \"Eres un asistente virtual que responde de forma clara y directa. Cuando el usuario pida una operacion aritmetica, resuelvela paso a paso y entrega el resultado numerico. Si no estas seguro de un calculo, indicalo. Responde en el idioma del usuario, de forma breve.\" });\n}\nhistory.push({ role: 'user', content: msg });\n$getWorkflowStaticData('global').messages = history;\nreturn { userMessage: msg, messages: history };"
       },
       "id": "33333333-3333-3333-3333-333333333333",
-      "name": "Extraer mensaje",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "name": "Preparar contexto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [500, 300]
     },
     {
@@ -61,7 +52,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"deepseek/deepseek-v4-flash\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un asistente amigable y breve. Responde de forma concisa.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.userMessage }}\"\n    }\n  ]\n}"
+        "jsonBody": "{\n  \"model\": \"deepseek/deepseek-v4-flash\",\n  \"messages\": {{ JSON.stringify($json.messages) }}\n}"
       },
       "id": "44444444-4444-4444-4444-444444444444",
       "name": "Llamar a OpenRouter",
@@ -77,15 +68,25 @@
     },
     {
       "parameters": {
+        "jsCode": "const data = $json;\nconst reply = data.choices?.[0]?.message?.content ?? '';\nconst history = $getWorkflowStaticData('global').messages || [];\nhistory.push({ role: 'assistant', content: reply });\n$getWorkflowStaticData('global').messages = history;\nreturn { reply: reply };"
+      },
+      "id": "77777777-7777-7777-7777-777777777777",
+      "name": "Guardar respuesta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { reply: $json.choices[0].message.content } }}",
+        "responseBody": "={{ { reply: $json.reply } }}",
         "options": {}
       },
       "id": "55555555-5555-5555-5555-555555555555",
       "name": "Responder",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [1000, 300]
+      "position": [1250, 300]
     }
   ],
   "connections": {
@@ -93,7 +94,7 @@
       "main": [
         [
           {
-            "node": "Extraer mensaje",
+            "node": "Preparar contexto",
             "type": "main",
             "index": 0
           }
@@ -104,14 +105,14 @@
       "main": [
         [
           {
-            "node": "Extraer mensaje",
+            "node": "Preparar contexto",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extraer mensaje": {
+    "Preparar contexto": {
       "main": [
         [
           {
@@ -123,6 +124,17 @@
       ]
     },
     "Llamar a OpenRouter": {
+      "main": [
+        [
+          {
+            "node": "Guardar respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar respuesta": {
       "main": [
         [
           {

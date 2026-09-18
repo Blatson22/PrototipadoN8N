@@ -60,3 +60,4 @@ Debería devolver `{"reply":"..."}`.
 - **CORS**: el workflow deja `*` como origen permitido para pruebas; en producción cambia ese valor por la URL real de tu frontend.
 - **API key**: no se almacena en el repositorio. Se guarda en una credencial de n8n (Header Auth). Si alguna vez se expone, revócala en tu dashboard de OpenRouter y genera una nueva.
 - El modelo usado es `deepseek/deepseek-v4-flash` (OpenRouter). Se puede cambiar en el `jsonBody` del nodo "Llamar a OpenRouter".
+- El workflow guarda **memoria de conversación** (historial en `$getWorkflowStaticData`) para que el modelo recuerde el contexto de la charla entre mensajes.
