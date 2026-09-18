@@ -11,7 +11,7 @@ Flutter (Frontend)  --POST JSON {"message": ...}-->  n8n Webhook  --HTTP-->  Ope
 
 ## Estructura
 
-- `Bankend/workflow.json` — Workflow de n8n importable (Webhook → Extraer mensaje → HTTP Request a OpenRouter → Respond to Webhook).
+- `Backend/workflow.json` — Workflow de n8n importable (Webhook → Extraer mensaje → HTTP Request a OpenRouter → Respond to Webhook).
 - `Frontend/` — App de chat en Flutter (campo de texto, burbujas, auto-scroll, manejo de errores).
 
 ## Puesta en marcha
